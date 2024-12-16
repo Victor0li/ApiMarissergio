@@ -1,11 +1,11 @@
+import { Tarefa } from './tarefa.model'; // Importa a classe Tarefa
+
 export type usuarioProps = {
     id: string;
     email: string;
     senha: string;
-    tarefas?: Tarefa[];
+    tarefas?: Tarefa[]; // Tarefas associadas ao usuário
 };
-
-import { Tarefa } from './tarefa.model'; // Importa a classe Tarefa
 
 export class Usuario {
     private constructor(readonly props: usuarioProps) {}
@@ -30,16 +30,18 @@ export class Usuario {
             id,
             email,
             senha,
-            tarefas: tarefas || []
+            tarefas: tarefas || [] // Mantém as tarefas associadas ao usuário
         };
         return new Usuario(props);
     }
 
+    // Método para adicionar uma tarefa ao usuário
     public addTarefa(tarefa: Tarefa): Usuario {
         const tarefasAtualizadas = [...(this.props.tarefas || []), tarefa];
         return Usuario.assemble(this.props.id, this.props.email, this.props.senha, tarefasAtualizadas);
     }
 
+    // Método para consultar as tarefas do usuário
     public getTarefas(): Tarefa[] {
         return this.props.tarefas || [];
     }

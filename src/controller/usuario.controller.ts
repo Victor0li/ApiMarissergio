@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
-import { Usuario, usuarioProps } from "../model/usuario.model";
+import { Usuario } from "../model/usuario.model";
 import { UsuarioDao } from "../dao/usuario.dao";
 
 export class UsuarioController {
-    public constructor(readonly usuarioDao: UsuarioDao) {} // Recebe o DAO que acessa o banco
+    public constructor(readonly usuarioDao: UsuarioDao) {}
 
     // Criar Usuário
     public async criarUsuario(req: Request, res: Response) {
@@ -12,8 +12,8 @@ export class UsuarioController {
             const usuario: Usuario = Usuario.build(email, senha);
             await this.usuarioDao.criarUsuario(usuario);
             res.status(201).send({ message: "Usuário criado com sucesso!" });
-        } catch (error) {
-            res.status(500).send({ message: "Erro ao criar usuário", error });
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao criar usuário", error: error.message });
         }
     }
 
@@ -21,9 +21,9 @@ export class UsuarioController {
     public async listarUsuarios(req: Request, res: Response) {
         try {
             const usuarios = await this.usuarioDao.listarUsuarios();
-            res.status(200).json({ usuarios }).send();
-        } catch (error) {
-            res.status(500).send({ message: "Erro ao listar usuários", error });
+            res.status(200).json(usuarios);
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao listar usuários", error: error.message });
         }
     }
 
@@ -35,9 +35,9 @@ export class UsuarioController {
             if (!usuario) {
                 return res.status(404).send({ message: "Usuário não encontrado" });
             }
-            res.status(200).json({ usuario }).send();
-        } catch (error) {
-            res.status(500).send({ message: "Erro ao buscar usuário", error });
+            res.status(200).json(usuario);
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao buscar usuário", error: error.message });
         }
     }
 
@@ -49,8 +49,8 @@ export class UsuarioController {
             const usuario = Usuario.assemble(id, email, senha);
             await this.usuarioDao.editarUsuario(usuario.props);
             res.status(200).send({ message: "Usuário editado com sucesso!" });
-        } catch (error) {
-            res.status(500).send({ message: "Erro ao editar usuário", error });
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao editar usuário", error: error.message });
         }
     }
 
@@ -59,9 +59,9 @@ export class UsuarioController {
         const id = req.params.id;
         try {
             await this.usuarioDao.deletarUsuario(id);
-            res.status(200).send({ message: "Usuário deletado com sucesso!" });
-        } catch (error) {
-            res.status(500).send({ message: "Erro ao deletar usuário", error });
+            res.status(204).send(); // 204 No Content
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao deletar usuário", error: error.message });
         }
     }
 }

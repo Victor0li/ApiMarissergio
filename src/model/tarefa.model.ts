@@ -4,40 +4,42 @@ export enum StatusTarefa {
     CONCLUIDA = "concluída"
 }
 
-export type tarefaProps = { //Definir a estrutura da tarefa
+export type tarefaProps = { // Definir a estrutura da tarefa
     id: string;
     titulo: string;
     descricao: string;
     status: StatusTarefa;
+    id_usuario: string; // Associado a um usuário existente
 }
 
-export class Tarefa { //Exportar a classe ---------------------↴
-    private constructor(readonly props: tarefaProps) {} // mas de um jeito que seja imutável
-    // Não daria pra fazer um new Tarefa() por exemlo
+export class Tarefa { // Exportar a classe
+    private constructor(readonly props: tarefaProps) {} // Imutável
     
-    public static build(titulo: string, descricao: string) { // Método pra criar nova tarefa
-        if (!titulo) {
-            throw new Error("Título é obrigatório");
+    // Método para criar uma nova tarefa
+    public static build(titulo: string, descricao: string, id_usuario: string): Tarefa {
+        if (!titulo || !id_usuario) {
+            throw new Error("Título e ID do usuário são obrigatórios");
         }
 
         const props: tarefaProps = {
-            id: crypto.randomUUID().toString(), // Aqui gera automático o ID 
+            id: crypto.randomUUID().toString(), // Gera automaticamente o ID da tarefa
             titulo,
             descricao,
-            status: StatusTarefa.PENDENTE
-        }
-        return new Tarefa(props)
+            status: StatusTarefa.PENDENTE,
+            id_usuario // Associado ao usuário fornecido
+        };
+        return new Tarefa(props);
     }
     
-    // Metodo pra consultar dados já existentes 
-    public static assemble(id: string, titulo: string, descricao: string, status: StatusTarefa) { 
+    // Método para consultar dados já existentes
+    public static assemble(id: string, titulo: string, descricao: string, status: StatusTarefa, id_usuario: string): Tarefa {
         const props: tarefaProps = {
             id,
             titulo,
             descricao,
-            status
-        }
-        return new Tarefa(props)
+            status,
+            id_usuario
+        };
+        return new Tarefa(props);
     }
 }
-

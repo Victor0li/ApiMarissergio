@@ -1,68 +1,67 @@
-import { Request, Response } from 'express';
-import { Tarefa, tarefaProps } from '../model/tarefa.model';
-import { TarefaDao } from '../dao/tarefa.dao';
+import { Request, Response } from "express";
+import { Tarefa, tarefaProps } from "../model/tarefa.model";
+import { TarefaDao } from "../dao/tarefa.dao";
 
 export class TarefaController {
-    public constructor(readonly tarefaDao: TarefaDao) { } // Recebe o DAO(q é quem acessa o banco)
+    public constructor(readonly tarefaDao: TarefaDao) {}
 
-    //Criar Tarefa
+    // Criar Tarefa
     public async criarTarefa(req: Request, res: Response) {
-        const { titulo, descricao } = req.body
-        const tarefa: Tarefa = Tarefa.build(titulo, descricao)
+        const { titulo, descricao, id_usuario } = req.body;
         try {
-            this.tarefaDao.criarTarefa(tarefa)
-            res.status(201).send({ message: 'Tarefa criada com sucesso!' })
-        } catch (error) {
-            res.status(500).send({ message: 'Erro ao criar tarefa', error });
+            const tarefa: Tarefa = Tarefa.build(titulo, descricao, id_usuario);
+            await this.tarefaDao.criarTarefa(tarefa);
+            res.status(201).send({ message: "Tarefa criada com sucesso!" });
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao criar tarefa", error: error.message });
         }
     }
 
-    //Listar Tarefas
-    public async listarTarefas(res: Response) {
+    // Listar Tarefas
+    public async listarTarefas(req: Request, res: Response) {
         try {
-            const tarefa = await this.tarefaDao.listarTarefas()
-            res.status(200).json({ tarefa }).send()
-        } catch {
-            res.status(500).send({ message: 'Erro ao listar tarefa:' })
+            const tarefas = await this.tarefaDao.listarTarefas();
+            res.status(200).json(tarefas);
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao listar tarefas", error: error.message });
         }
     }
 
-    //Buscar por ID
+    // Buscar por ID
     public async buscarTarefa(req: Request, res: Response) {
-        const id = req.params.id
+        const id = req.params.id;
         try {
-            const tarefa = await this.tarefaDao.buscarTarefa(id)
-            res.status(200).json({ tarefa }).send
-        } catch {
-            res.status(404).send({ message: 'Tarefa não encontrada' })
+            const tarefa = await this.tarefaDao.buscarTarefa(id);
+            if (!tarefa) {
+                return res.status(404).send({ message: "Tarefa não encontrada" });
+            }
+            res.status(200).json(tarefa);
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao buscar tarefa", error: error.message });
         }
-
     }
 
-    //Editar tarefa
+    // Editar Tarefa
     public async editarTarefa(req: Request, res: Response) {
+        const id = req.params.id;
+        const { titulo, descricao, status, id_usuario } = req.body;
         try {
-            const id = req.params.id;
-            const { titulo, descricao, status } = req.body;
-
-            const tarefa = Tarefa.assemble(id, titulo, descricao, status);
-            await this.tarefaDao.editarTarefa(tarefa.props)
-
-            return res.status(200).send({ message: 'Tarefa editada com sucesso!' })
-
-        } catch (error) {
-            res.status(404).send({ message: 'Tarefa não encontrada' })
+            const tarefa = Tarefa.assemble(id, titulo, descricao, status, id_usuario);
+            await this.tarefaDao.editarTarefa(tarefa.props);
+            res.status(200).send({ message: "Tarefa editada com sucesso!" });
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao editar tarefa", error: error.message });
         }
     }
 
-    // Deletar tarefa
+    // Deletar Tarefa
     public async deletarTarefa(req: Request, res: Response) {
-        const id = req.params.id
+        const id = req.params.id;
         try {
-            await this.tarefaDao.deletarTarefa(id)
-            res.status(200).send({ message: 'Tarefa deletada com sucesso!' })
-        } catch {
-            res.status(404).send({ message: 'Tarefa não encontrada' })
+            await this.tarefaDao.deletarTarefa(id);
+            res.status(204).send(); // 204 No Content
+        } catch (error: any) { // Type assertion para 'any'
+            res.status(500).send({ message: "Erro ao deletar tarefa", error: error.message });
         }
     }
 }
