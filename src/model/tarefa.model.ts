@@ -22,7 +22,7 @@ export class Tarefa { // Exportar a classe
         }
 
         const props: tarefaProps = {
-            id: crypto.randomUUID().toString(), // Gera automaticamente o ID da tarefa
+            id: crypto.randomUUID().toString(),
             titulo,
             descricao,
             status: StatusTarefa.PENDENTE,

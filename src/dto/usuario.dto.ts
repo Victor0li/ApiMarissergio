@@ -14,11 +14,12 @@ export class CriarUsuarioDto {
         this.senha = senha;
     }
 
-    // Valida se o email segue o formato correto
+    //(exemplo@email.com)
     private validarEmail(email: string): boolean {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
         return regex.test(email);
     }
+    
 }
 
 export class AtualizarUsuarioDto {
@@ -37,9 +38,9 @@ export class AtualizarUsuarioDto {
         this.senha = senha;
     }
 
-    // Valida se o email segue o formato correto (exemplo@email.com)
+    //(exemplo@email.com)
     private validarEmail(email: string): boolean {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const regex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
         return regex.test(email);
-    }
+    }    
 }

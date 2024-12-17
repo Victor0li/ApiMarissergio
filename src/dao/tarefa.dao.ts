@@ -19,9 +19,12 @@ export class TarefaDao {
     }
 
     // Listar Tarefas
-    public async listarTarefas(): Promise<Tarefa[]> {
+    public async listarTarefas(id_usuario: string): Promise<Tarefa[]> {
         try {
-            const [resultado] = await pool.query<tarefaProps[] & RowDataPacket[]>("SELECT * FROM tarefas");
+            const [resultado] = await pool.query<tarefaProps[] & RowDataPacket[]>(
+                "SELECT * FROM tarefas WHERE id_usuario = ?",
+                [id_usuario]
+            );
             return resultado.map((tarefa) => {
                 const { id, titulo, descricao, status, id_usuario } = tarefa;
                 return Tarefa.assemble(id, titulo, descricao, status, id_usuario); // Incluindo o id_usuario

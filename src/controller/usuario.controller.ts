@@ -1,19 +1,25 @@
 import { Request, Response } from "express";
 import { Usuario } from "../model/usuario.model";
 import { UsuarioDao } from "../dao/usuario.dao";
+import { CriarUsuarioDto } from "../dto/usuario.dto"; // Importando o DTO de criação
 
 export class UsuarioController {
     public constructor(readonly usuarioDao: UsuarioDao) {}
 
     // Criar Usuário
     public async criarUsuario(req: Request, res: Response) {
-        const { email, senha } = req.body;
         try {
+            // Valida os dados de entrada usando o DTO
+            const { email, senha } = new CriarUsuarioDto(
+                req.body.email,
+                req.body.senha
+            );
+
             const usuario: Usuario = Usuario.build(email, senha);
             await this.usuarioDao.criarUsuario(usuario);
             res.status(201).send({ message: "Usuário criado com sucesso!" });
-        } catch (error: any) { // Type assertion para 'any'
-            res.status(500).send({ message: "Erro ao criar usuário", error: error.message });
+        } catch (error: any) { 
+            res.status(400).send({ message: "Erro ao criar usuário", error: error.message });
         }
     }
 
@@ -22,7 +28,7 @@ export class UsuarioController {
         try {
             const usuarios = await this.usuarioDao.listarUsuarios();
             res.status(200).json(usuarios);
-        } catch (error: any) { // Type assertion para 'any'
+        } catch (error: any) { 
             res.status(500).send({ message: "Erro ao listar usuários", error: error.message });
         }
     }
@@ -36,7 +42,7 @@ export class UsuarioController {
                 return res.status(404).send({ message: "Usuário não encontrado" });
             }
             res.status(200).json(usuario);
-        } catch (error: any) { // Type assertion para 'any'
+        } catch (error: any) { 
             res.status(500).send({ message: "Erro ao buscar usuário", error: error.message });
         }
     }
@@ -46,11 +52,13 @@ export class UsuarioController {
         const id = req.params.id;
         const { email, senha } = req.body;
         try {
-            const usuario = Usuario.assemble(id, email, senha);
-            await this.usuarioDao.editarUsuario(usuario.props);
+            // Valida os dados de entrada usando o DTO
+            const usuario = new CriarUsuarioDto(email, senha); // Usando o mesmo DTO para validação
+            const usuarioAtualizado = Usuario.assemble(id, usuario.email, usuario.senha);
+            await this.usuarioDao.editarUsuario(usuarioAtualizado.props);
             res.status(200).send({ message: "Usuário editado com sucesso!" });
-        } catch (error: any) { // Type assertion para 'any'
-            res.status(500).send({ message: "Erro ao editar usuário", error: error.message });
+        } catch (error: any) { 
+            res.status(400).send({ message: "Erro ao editar usuário", error: error.message });
         }
     }
 
@@ -59,8 +67,8 @@ export class UsuarioController {
         const id = req.params.id;
         try {
             await this.usuarioDao.deletarUsuario(id);
-            res.status(204).send(); // 204 No Content
-        } catch (error: any) { // Type assertion para 'any'
+            res.status(204).send(); 
+        } catch (error: any) { 
             res.status(500).send({ message: "Erro ao deletar usuário", error: error.message });
         }
     }

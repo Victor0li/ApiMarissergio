@@ -4,7 +4,7 @@ export type usuarioProps = {
     id: string;
     email: string;
     senha: string;
-    tarefas?: Tarefa[]; // Tarefas associadas ao usuário
+    tarefas?: Tarefa[]; // As tarefas do usuário  ("?" pq é opcional)
 };
 
 export class Usuario {
@@ -17,10 +17,10 @@ export class Usuario {
         }
 
         const props: usuarioProps = {
-            id: crypto.randomUUID().toString(), // Gera um ID único
+            id: crypto.randomUUID().toString(),
             email,
             senha,
-            tarefas: [] // Inicialmente sem tarefas
+            tarefas: [] // Começa sem tarefa associada 
         };
         return new Usuario(props);
     }
@@ -30,14 +30,14 @@ export class Usuario {
             id,
             email,
             senha,
-            tarefas: tarefas || [] // Mantém as tarefas associadas ao usuário
+            tarefas: tarefas || []
         };
         return new Usuario(props);
     }
 
     // Método para adicionar uma tarefa ao usuário
     public addTarefa(tarefa: Tarefa): Usuario {
-        const tarefasAtualizadas = [...(this.props.tarefas || []), tarefa];
+        const tarefasAtualizadas = [...(this.props.tarefas || []), tarefa]; //"..." é um operaddor de espalhamento -> ele vai copiar os elementos recebidos e armazenar em um novo array
         return Usuario.assemble(this.props.id, this.props.email, this.props.senha, tarefasAtualizadas);
     }
 

@@ -11,9 +11,9 @@ router.post('/tarefas', (req: Request, res: Response) => {
     tarefaController.criarTarefa(req, res);
 });
 
-// Rota para listar todas as tarefas
-router.get('/tarefas', (req: Request, res: Response) => {
-    tarefaController.listarTarefas(req, res);
+// Rota para listar tarefas do usuario
+router.get('/tarefas/usuarios/:id_usuario', (req: Request, res: Response) => {
+    tarefaController.listarTarefasPorUsuario(req, res);
 });
 
 // Rota para buscar tarefa por ID
